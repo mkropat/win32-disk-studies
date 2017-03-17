@@ -14,3 +14,8 @@
 
 
 // TODO: reference additional headers your program requires here
+
+#include <stddef.h>
+#include <stdlib.h>
+
+#include "Win32Adapter.h"
