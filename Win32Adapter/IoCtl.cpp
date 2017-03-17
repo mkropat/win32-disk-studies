@@ -53,3 +53,92 @@ cleanup:
 	free(diskGeometry);
 	return success;
 }
+
+struct _IoctlVolumeGetVolumeDiskExtents_Enumerator
+{
+	int i;
+	DISK_EXTENT current;
+	PVOLUME_DISK_EXTENTS extents;
+};
+
+EXTERN_DLL_EXPORT BOOL WINAPI IoctlVolumeGetVolumeDiskExtents_Enumerate(
+	HANDLE device,
+	IoctlVolumeGetVolumeDiskExtents_Enumerator *enumerator)
+{
+	_IoctlVolumeGetVolumeDiskExtents_Enumerator *e = (_IoctlVolumeGetVolumeDiskExtents_Enumerator*)enumerator;
+
+	e->i = -1;
+	ZeroMemory(&e->current, sizeof(DISK_EXTENT));
+	e->extents = nullptr;
+
+	DWORD pExtentsSize = sizeof(VOLUME_DISK_EXTENTS);
+	e->extents = (PVOLUME_DISK_EXTENTS)malloc(pExtentsSize);
+	if (e->extents == nullptr)
+		return FALSE;
+	ZeroMemory(e->extents, pExtentsSize);
+
+	DWORD bytesReturned;
+
+	if (!DeviceIoControl(
+		device,
+		IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,
+		nullptr,
+		0,
+		e->extents,
+		pExtentsSize,
+		&bytesReturned,
+		nullptr))
+	{
+		free(e->extents);
+
+		if (GetLastError() != ERROR_MORE_DATA)
+			return FALSE;
+
+		pExtentsSize = offsetof(VOLUME_DISK_EXTENTS, Extents) + e->extents->NumberOfDiskExtents * sizeof(DISK_EXTENT);
+		e->extents = (PVOLUME_DISK_EXTENTS)malloc(pExtentsSize);
+		if (e->extents == nullptr)
+			return FALSE;
+		ZeroMemory(e->extents, pExtentsSize);
+
+		if (!DeviceIoControl(
+			device,
+			IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS,
+			nullptr,
+			0,
+			e->extents,
+			pExtentsSize,
+			&bytesReturned,
+			nullptr))
+		{
+			free(e->extents);
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+EXTERN_DLL_EXPORT BOOL WINAPI IoctlVolumeGetVolumeDiskExtents_Next(
+	IoctlVolumeGetVolumeDiskExtents_Enumerator *enumerator)
+{
+	_IoctlVolumeGetVolumeDiskExtents_Enumerator *e = (_IoctlVolumeGetVolumeDiskExtents_Enumerator*)enumerator;
+
+	e->i++;
+	int i = e->i;
+
+	long numberOfExtents = (long)e->extents->NumberOfDiskExtents;
+	if (numberOfExtents <= i)
+		return FALSE;
+
+	e->current = e->extents->Extents[i];
+
+	return TRUE;
+}
+
+EXTERN_DLL_EXPORT void WINAPI IoctlVolumeGetVolumeDiskExtents_Done(
+	IoctlVolumeGetVolumeDiskExtents_Enumerator *enumerator)
+{
+	_IoctlVolumeGetVolumeDiskExtents_Enumerator *e = (_IoctlVolumeGetVolumeDiskExtents_Enumerator*)enumerator;
+
+	free(e->extents);
+}
