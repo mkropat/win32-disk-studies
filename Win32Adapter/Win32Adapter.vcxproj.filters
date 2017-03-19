@@ -27,6 +27,9 @@
     <ClInclude Include="Win32Adapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SetupApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IoCtl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetupApi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
