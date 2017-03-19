@@ -18,6 +18,40 @@ EXTERN_DLL_EXPORT BOOL WINAPI IoctlDiskGetDriveGeometryEx(
 	HANDLE device,
 	IoctlDiskGetDriveGeometryEx_Result *result);
 
+struct IoctlDiskGetDriveLayout_PartitionInfo
+{
+	LARGE_INTEGER StartingOffset;
+	LARGE_INTEGER PartitionLength;
+	DWORD PartitionNumber;
+	BYTE MbrParititonType;
+	BOOL MbrIsRecognizedType;
+	BOOL MbrIsBootable;
+	DWORD MbrHiddenSectorCount;
+	GUID PartitionType;
+	GUID PartitionId;
+	DWORD64 Attributes;
+	WCHAR Name[36];
+};
+
+struct IoctlDiskGetDriveLayout_Enumerator
+{
+	DWORD ParitionStyle;
+	long i;
+	long Total;
+	IoctlDiskGetDriveLayout_PartitionInfo Current;
+	HANDLE Handle;
+};
+
+EXTERN_DLL_EXPORT BOOL WINAPI IoctlDiskGetDriveLayout_Enumerate(
+	HANDLE device,
+	IoctlDiskGetDriveLayout_Enumerator *enumerator);
+
+EXTERN_DLL_EXPORT BOOL WINAPI IoctlDiskGetDriveLayout_Next(
+	IoctlDiskGetDriveLayout_Enumerator *enumerator);
+
+EXTERN_DLL_EXPORT void WINAPI IoctlDiskGetDriveLayout_Done(
+	IoctlDiskGetDriveLayout_Enumerator *enumerator);
+
 struct IoctlVolumeGetVolumeDiskExtents_Enumerator
 {
 	int i;
