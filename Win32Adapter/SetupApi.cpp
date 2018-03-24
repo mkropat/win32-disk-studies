@@ -79,7 +79,7 @@ EXTERN_DLL_EXPORT BOOL WINAPI SetupApi_Next(SetupApiDeviceEnumerator *enumerator
 		goto cleanup;
 	}
 
-	size_t deviceInterfaceDetailDataSize = offsetof(SP_DEVICE_INTERFACE_DETAIL_DATA, DevicePath) + sizeof(WCHAR)*SetupApiDeviceEnumeratorPathSize;
+	DWORD deviceInterfaceDetailDataSize = offsetof(SP_DEVICE_INTERFACE_DETAIL_DATA, DevicePath) + sizeof(WCHAR)*SetupApiDeviceEnumeratorPathSize;
 	deviceInterfaceDetailData = (SP_DEVICE_INTERFACE_DETAIL_DATA*)malloc(deviceInterfaceDetailDataSize);
 	if (deviceInterfaceDetailData == nullptr)
 		goto cleanup;

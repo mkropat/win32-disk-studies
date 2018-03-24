@@ -8,7 +8,7 @@ EXTERN_DLL_EXPORT BOOL WINAPI IoctlDiskGetDriveGeometryEx(
 
 	ZeroMemory(result, sizeof(result));
 
-	size_t diskGeometrySize = offsetof(DISK_GEOMETRY_EX, Data) + sizeof(DISK_PARTITION_INFO) + sizeof(DISK_DETECTION_INFO);
+	DWORD diskGeometrySize = offsetof(DISK_GEOMETRY_EX, Data) + sizeof(DISK_PARTITION_INFO) + sizeof(DISK_DETECTION_INFO);
 	PDISK_GEOMETRY_EX diskGeometry = (PDISK_GEOMETRY_EX)malloc(diskGeometrySize);
 	if (!diskGeometry)
 		goto cleanup;
@@ -73,7 +73,7 @@ EXTERN_DLL_EXPORT BOOL WINAPI IoctlDiskGetDriveLayout_Enumerate(
 	ZeroMemory(e, sizeof(_IoctlDiskGetDriveLayout_Enumerator));
 	e->i = -1;
 
-	size_t layoutInfoSize = offsetof(DRIVE_LAYOUT_INFORMATION_EX, PartitionEntry) + sizeof(PARTITION_INFORMATION_EX) * MAX_GPT_PARTITION_COUNT;
+	DWORD layoutInfoSize = offsetof(DRIVE_LAYOUT_INFORMATION_EX, PartitionEntry) + sizeof(PARTITION_INFORMATION_EX) * MAX_GPT_PARTITION_COUNT;
 	e->layoutInfo = (PDRIVE_LAYOUT_INFORMATION_EX)malloc(layoutInfoSize);
 	if (!e->layoutInfo)
 		return FALSE;
